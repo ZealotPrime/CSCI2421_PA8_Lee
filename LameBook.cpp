@@ -100,6 +100,15 @@ void LameBook::printUsers()
 
 void LameBook::userDashboard(User &current)
 {
+    int menuChoice=0;
     current.processFriendRequests();
+    while(menuChoice!=6)
+    {
+        std::cout<<"What would you like to do next?\n";
+        std::cout<<"1.Print your status\n2:Set your status\n3:Print all your statuses\n4:Add a friend\n5:Print a friend's status\n6:Logout";
+        std::cin>>menuChoice;
+        std::cin.clear();
+
+    }
 
 }
