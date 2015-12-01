@@ -17,7 +17,7 @@ void User::setStatus()//sets the user's status, and archives the current one, if
 {
     std::string input;
     std::cout<<"What's on your mind...?"<<std::endl;
-    std::cin>>input;
+    getline(std::cin,input);
     m_status.push_front(input);
 }
 
@@ -63,7 +63,7 @@ void User::processFriendRequests()//prompts the user to accept or decline each f
 
 void User::printStatus()//prints current status
 {
-    if(m_status.empty)
+    if(m_status.empty())
     {
         std::cout<<"You haven't posted any statuses yet!"<<std::endl;
         return;
@@ -73,7 +73,7 @@ void User::printStatus()//prints current status
 
 void User::printAllStatuses()//prints all statuses for user
 {
-    if(m_status.empty)
+    if(m_status.empty())
     {
         std::cout<<"You haven't posted any statuses yet!"<<std::endl;
         return;
