@@ -6,6 +6,7 @@
 #define CSCI2421_PA8_LEE_LAMEBOOK_H
 
 #include <forward_list>
+#include <fstream>
 #include "User.h"
 
 class LameBook
@@ -22,7 +23,7 @@ private:
     void printUsers();
     void userDashboard(User& current);
     void printFriendStatus(std::string target);
-    std::forward_list<User> m_users;
+    std::forward_list<User> m_Users;
 };
 
 

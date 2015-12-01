@@ -97,34 +97,34 @@ void User::printFriendList()//prints the user's friend list
     }
 }
 
-std::ostream &User::operator<<(std::ostream &os)//outputs the user in a format suitable for later loading from file
+std::ostream &operator<<(std::ostream &os, User& target)//outputs the user in a format suitable for later loading from file
 {
-    os<<m_userName<<std::endl;
+    os<<target.m_userName<<std::endl;
 
-    if(!m_status.empty())//output the user's statuses in reverse order so they load correctly
+    if(!target.m_status.empty())//output the user's statuses in reverse order so they load correctly
     {
-        m_status.reverse();
-        for(auto seeker=m_status.begin();seeker!=m_status.end();++seeker)
+        target.m_status.reverse();
+        for(auto seeker=target.m_status.begin();seeker!=target.m_status.end();++seeker)
         {
-            if(seeker!=m_status.begin())
+            if(seeker!=target.m_status.begin())
                 os<<",";
             os<<*seeker;
 
         }
-        m_status.reverse();
+        target.m_status.reverse();
     }
     os<<std::endl;
 
-    for(auto seeker=m_friendsList.begin();seeker!=m_friendsList.end();++seeker)//output friends list
+    for(auto seeker=target.m_friendsList.begin();seeker!=target.m_friendsList.end();++seeker)//output friends list
     {
-        if(seeker!=m_friendsList.begin())
+        if(seeker!=target.m_friendsList.begin())
             os<<",";//append comma if this isn't the start of the loop
         os<<*seeker;
     }
 
-    for(auto seeker=m_friendRequests.rbegin();seeker!=m_friendRequests.rend();++seeker)
+    for(auto seeker=target.m_friendRequests.rbegin();seeker!=target.m_friendRequests.rend();++seeker)
     {
-        if(seeker!=m_friendRequests.rbegin())
+        if(seeker!=target.m_friendRequests.rbegin())
             os<<",";//append comma if this isn't the start of the loop
         os<<*seeker;
     }
@@ -132,30 +132,30 @@ std::ostream &User::operator<<(std::ostream &os)//outputs the user in a format s
     return os;
 }
 
-std::istream &User::operator>>(std::istream &is)
+std::istream &operator>>(std::istream &is, User& target)
 {
     std::string worker;
-    getline(is,m_userName);//get the username
+    getline(is,target.m_userName);//get the username
 
     getline(is,worker);//getline to temp string
     std::stringstream workStream(worker);//put it into a stream for manipulation
     while(getline(workStream,worker,','))
     {
-        m_status.push_front(worker);//fill statuses
+        target.m_status.push_front(worker);//fill statuses
     }
 
     getline(is,worker);//getline to temp string
     workStream.str(worker);//put it into a stream for manipulation
     while(getline(workStream,worker,','))
     {
-        m_friendsList.push_back(worker);//fill friends list
+        target.m_friendsList.push_back(worker);//fill friends list
     }
 
     getline(is,worker);//getline to temp string
     workStream.str(worker);//put it into a stream for manipulation
     while(getline(workStream,worker,','))
     {
-        m_friendRequests.push_front(worker);//fill friends list
+        target.m_friendRequests.push_front(worker);//fill friends list
     }
 
     return is;

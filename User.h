@@ -21,7 +21,7 @@ public:
     void setStatus();
     void addFriendRequest(std::string name);
     void processFriendRequests();
-    std::istream& operator>>(std::istream& is);
+    friend std::istream& operator>>(std::istream& is, User& target);
 
     //output/get functions
     std::string getName(){return m_userName;}
@@ -29,7 +29,7 @@ public:
     void printAllStatuses();
     void printFriendList();
     bool hasFriend(std::string target);
-    std::ostream& operator<<(std::ostream& os);
+    friend std::ostream& operator<<(std::ostream& os, User& target);
 
 private:
     std::string m_userName;
