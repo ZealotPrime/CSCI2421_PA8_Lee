@@ -1,15 +1,10 @@
 #include <iostream>
-#include "User.h"
+#include "LameBook.h"
 using namespace std;
 
 
 int main()
 {
-    User testUser("Bob");
-    testUser.setStatus();
-    testUser.setStatus();
-    testUser.getName();
-    testUser.printStatus();
-    testUser.printAllStatuses();
+    LameBook("/home/zealot/ClionProjects/CSCI2421_PA8_Lee/users.dat");
     return 0;
 }

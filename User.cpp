@@ -24,18 +24,20 @@ void User::setStatus()//sets the user's status, and archives the current one, if
 void User::addFriend(std::string name)//private function that adds a friend to user's list
 {
     auto seeker=m_friendsList.begin();
-    for(;*seeker<name&&seeker!=m_friendsList.end();++seeker){}
-    if(*seeker==name)//end early if target user already a friend
+    for(;seeker!=m_friendsList.end()&&*seeker<=name;++seeker)
     {
-        std::cout<<name<<" is already a friend of "<<m_userName<<"."<<std::endl;
-        return;
+        if(*seeker==name)//end early if target user already a friend
+        {
+            std::cout<<name<<" is already a friend of "<<m_userName<<"."<<std::endl;
+            return;
+        }
     }
     m_friendsList.insert(seeker,name);//insert if they weren't a friend already
 }
 
-void User::addFriendRequest(std::string name)//adds a friend request to the queue
+void User::addFriendRequest(User* target)//adds a friend request to the queue
 {
-    m_friendRequests.push_front(name);
+    m_friendRequests.push_front(target);
 }
 
 void User::processFriendRequests()//prompts the user to accept or decline each friend request they have
@@ -44,11 +46,13 @@ void User::processFriendRequests()//prompts the user to accept or decline each f
     std::cout<<"You have "<<m_friendRequests.size()<<" new friend request"<<(m_friendRequests.size()!=1?"s":"")<<std::endl;
     while(m_friendRequests.size()>0)
     {
-        std::cout<<"Friend request from "<<m_friendRequests.back()<<std::endl<<"Accept? (Y/N)";
+        std::cout<<"Friend request from "<<m_friendRequests.back()->getName()<<std::endl<<"Accept? (Y/N)";
         std::cin>>input;
+        std::cin.ignore();
         if(input[0]=='y'||input[0]=='Y')
         {
-            addFriend(m_friendRequests.back());
+            addFriend((m_friendRequests.back()->getName()));
+            m_friendRequests.back()->addFriend(this->getName());
             m_friendRequests.pop_back();
         }
         else if(input[0]=='n'||input[0]=='N')
@@ -61,31 +65,35 @@ void User::processFriendRequests()//prompts the user to accept or decline each f
 
 }
 
-void User::printStatus()//prints current status
+void User::printStatus()const//prints current status
 {
+    std::cout<<std::endl;
     if(m_status.empty())
     {
         std::cout<<"You haven't posted any statuses yet!"<<std::endl;
         return;
     }
-    std::cout<<m_status.front()<<std::endl;
+    std::cout<<m_status.front()<<std::endl<<std::endl;
 }
 
-void User::printAllStatuses()//prints all statuses for user
+void User::printAllStatuses()const//prints all statuses for user
 {
+    std::cout<<std::endl;
     if(m_status.empty())
     {
-        std::cout<<"You haven't posted any statuses yet!"<<std::endl;
+        std::cout<<"You haven't posted any statuses yet!\n\n";
         return;
     }
     for(auto seeker=m_status.begin();seeker!=m_status.end();++seeker)
     {
         std::cout<<*seeker<<std::endl;
     }
+    std::cout<<std::endl;
 }
 
-void User::printFriendList()//prints the user's friend list
+void User::printFriendList()const//prints the user's friend list
 {
+    std::cout<<std::endl;
     if(m_friendsList.empty())
     {
         std::cout<<"You haven't added any of your friends yet!"<<std::endl;
@@ -95,15 +103,18 @@ void User::printFriendList()//prints the user's friend list
     {
         std::cout<<x<<":"<<m_friendsList[x]<<std::endl;
     }
+    std::cout<<std::endl;
 }
 
 std::ostream &operator<<(std::ostream &os, User& target)//outputs the user in a format suitable for later loading from file
 {
     os<<target.m_userName<<std::endl;
 
-    if(!target.m_status.empty())//output the user's statuses in reverse order so they load correctly
+    if(target.m_status.empty())
+        os<<"____";
+    else
     {
-        target.m_status.reverse();
+        target.m_status.reverse();//output the user's statuses in reverse order so they load correctly
         for(auto seeker=target.m_status.begin();seeker!=target.m_status.end();++seeker)
         {
             if(seeker!=target.m_status.begin())
@@ -115,20 +126,24 @@ std::ostream &operator<<(std::ostream &os, User& target)//outputs the user in a 
     }
     os<<std::endl;
 
-    for(auto seeker=target.m_friendsList.begin();seeker!=target.m_friendsList.end();++seeker)//output friends list
-    {
-        if(seeker!=target.m_friendsList.begin())
-            os<<",";//append comma if this isn't the start of the loop
-        os<<*seeker;
-    }
-
-    for(auto seeker=target.m_friendRequests.rbegin();seeker!=target.m_friendRequests.rend();++seeker)
-    {
-        if(seeker!=target.m_friendRequests.rbegin())
-            os<<",";//append comma if this isn't the start of the loop
-        os<<*seeker;
-    }
+    if(target.m_friendsList.empty())
+        os<<"____";
+    else
+        for(auto seeker=target.m_friendsList.begin();seeker!=target.m_friendsList.end();++seeker)//output friends list
+        {
+            if(seeker!=target.m_friendsList.begin())
+                os<<",";//append comma if this isn't the start of the loop
+            os<<*seeker;
+        }
     os<<std::endl;
+    //friend requests don't persist right now, as it's hard without breaking encapsulation
+//    for(auto seeker=target.m_friendRequests.rbegin();seeker!=target.m_friendRequests.rend();++seeker)
+//    {
+//        if(seeker!=target.m_friendRequests.rbegin())
+//            os<<",";//append comma if this isn't the start of the loop
+//        os<<(*seeker)->getName();
+//    }
+//    os<<std::endl;
     return os;
 }
 
@@ -139,30 +154,34 @@ std::istream &operator>>(std::istream &is, User& target)
 
     getline(is,worker);//getline to temp string
     std::stringstream workStream(worker);//put it into a stream for manipulation
-    while(getline(workStream,worker,','))
-    {
-        target.m_status.push_front(worker);//fill statuses
-    }
-
+    if(worker!="____")
+        while(getline(workStream,worker,','))
+        {
+            target.m_status.push_front(worker);//fill statuses
+        }
+    workStream.clear();
     getline(is,worker);//getline to temp string
     workStream.str(worker);//put it into a stream for manipulation
-    while(getline(workStream,worker,','))
-    {
-        target.m_friendsList.push_back(worker);//fill friends list
-    }
+    if(worker!="____")
+        while(getline(workStream,worker,','))
+        {
+            target.m_friendsList.push_back(worker);//fill friends list
+        }
 
-    getline(is,worker);//getline to temp string
-    workStream.str(worker);//put it into a stream for manipulation
-    while(getline(workStream,worker,','))
-    {
-        target.m_friendRequests.push_front(worker);//fill friends list
-    }
+    //friend requests don't persist right now, as it's hard without breaking encapsulation
+//    getline(is,worker);//getline to temp string
+//    workStream.str(worker);//put it into a stream for manipulation
+//    while(getline(workStream,worker,','))
+//    {
+//        for(auto seeker=)
+//        target.m_friendRequests.push_front(worker);
+//    }
 
     return is;
 }
 
 
-bool User::hasFriend(std::string target)
+bool User::hasFriend(std::string target)const
 {
     if(m_friendsList.empty())
         return false;

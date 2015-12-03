@@ -12,7 +12,8 @@
 class LameBook
 {
 public:
-    LameBook();
+    LameBook()= delete;
+    LameBook(std::string filePath);
     ~LameBook();
 
 
@@ -20,9 +21,11 @@ private:
     void frontEnd();
     void login();
     void newUser();
-    void printUsers();
+    void printUsers()const;
     void userDashboard(User& current);
-    void printFriendStatus(std::string target);
+    void newFriend(User& current);
+    void printFriendStatus(User& current);
+    std::string m_filePath;
     std::forward_list<User> m_Users;
 };
 
