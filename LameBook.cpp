@@ -12,7 +12,7 @@ LameBook::LameBook(std::string filePath)
     if (inFile.is_open())
     {
 
-        for (std::forward_list<User>::iterator seeker = m_Users.before_begin(); !inFile.eof(); )
+        for (std::forward_list<User>::iterator seeker = m_Users.before_begin(); inFile.good(); )
         {
             m_Users.emplace_after(seeker);
             inFile >> *(++seeker);
@@ -27,6 +27,8 @@ LameBook::~LameBook()
     std::ofstream outFile(m_filePath,std::ios_base::trunc);
     for(auto seeker=m_Users.begin();seeker!=m_Users.end();++seeker)
     {
+        if(seeker!=m_Users.begin())
+            outFile<<std::endl;
         outFile<<*seeker;
     }
 }

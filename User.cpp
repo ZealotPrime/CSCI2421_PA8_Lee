@@ -135,15 +135,6 @@ std::ostream &operator<<(std::ostream &os, User& target)//outputs the user in a 
                 os<<",";//append comma if this isn't the start of the loop
             os<<*seeker;
         }
-    os<<std::endl;
-    //friend requests don't persist right now, as it's hard without breaking encapsulation
-//    for(auto seeker=target.m_friendRequests.rbegin();seeker!=target.m_friendRequests.rend();++seeker)
-//    {
-//        if(seeker!=target.m_friendRequests.rbegin())
-//            os<<",";//append comma if this isn't the start of the loop
-//        os<<(*seeker)->getName();
-//    }
-//    os<<std::endl;
     return os;
 }
 
@@ -168,14 +159,6 @@ std::istream &operator>>(std::istream &is, User& target)
             target.m_friendsList.push_back(worker);//fill friends list
         }
 
-    //friend requests don't persist right now, as it's hard without breaking encapsulation
-//    getline(is,worker);//getline to temp string
-//    workStream.str(worker);//put it into a stream for manipulation
-//    while(getline(workStream,worker,','))
-//    {
-//        for(auto seeker=)
-//        target.m_friendRequests.push_front(worker);
-//    }
 
     return is;
 }
